@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draggable Grid Snap</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100vw;
+            height: 100vh;
+            background-image: 
+                linear-gradient(0deg, transparent 24%, rgba(0,0,0,.05) 25%, rgba(0,0,0,.05) 26%, transparent 27%, transparent 74%, rgba(0,0,0,.05) 75%, rgba(0,0,0,.05) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, rgba(0,0,0,.05) 25%, rgba(0,0,0,.05) 26%, transparent 27%, transparent 74%, rgba(0,0,0,.05) 75%, rgba(0,0,0,.05) 76%, transparent 77%, transparent);
+            background-size: 40px 40px;
+            position: relative;
+        }
+
+        .draggable {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background-color: #3498db;
+            border: 2px solid #2980b9;
+            border-radius: 8px;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            user-select: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,.1);
+        }
+
+        .draggable:active {
+            cursor: grabbing;
+            box-shadow: 0 8px 12px rgba(0,0,0,.2);
+        }
+
+        .draggable.box1 { background-color: #e74c3c; border-color: #c0392b; }
+        .draggable.box2 { background-color: #2ecc71; border-color: #27ae60; }
+        .draggable.box3 { background-color: #f39c12; border-color: #d68910; }
+        .draggable.box4 { background-color: #9b59b6; border-color: #8e44ad; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="draggable box1">Box 1</div>
+        <div class="draggable box2">Box 2</div>
+        <div class="draggable box3">Box 3</div>
+        <div class="draggable box4">Box 4</div>
+    </div>
+
+    <script>
+        const GRID_SIZE = 40;
+        let dragging = null;
+        let offsetX, offsetY;
+
+        document.querySelectorAll('.draggable').forEach(element => {
+            element.style.left = snapToGrid(Math.random() * (window.innerWidth - 80)) + 'px';
+            element.style.top = snapToGrid(Math.random() * (window.innerHeight - 80)) + 'px';
+
+            element.addEventListener('mousedown', startDrag);
+        });
+
+        function startDrag(e) {
+            dragging = this;
+            offsetX = e.clientX - dragging.offsetLeft;
+            offsetY = e.clientY - dragging.offsetTop;
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', stopDrag);
+        }
+
+        function drag(e) {
+            if (!dragging) return;
+            let x = e.clientX - offsetX;
+            let y = e.clientY - offsetY;
+            dragging.style.left = snapToGrid(x) + 'px';
+            dragging.style.top = snapToGrid(y) + 'px';
+        }
+
+        function stopDrag() {
+            dragging = null;
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', stopDrag);
+        }
+
+        function snapToGrid(value) {
+            return Math.round(value / GRID_SIZE) * GRID_SIZE;
+        }
+    </script>
+</body>
+</html>

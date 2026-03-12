@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iisu ahh launcher</title>
+    <!--<link rel="icon" href="icon" type="image/png" />-->
+    <link rel="stylesheet" href="style.css" />
+</head> 
+<body>
+    <div class="navbar">
+        <img src="../LOGOS/logo simple.png" height="60px">
+        <div onclick="window.location='../index.html'" style="padding-top: 5px;"><img src="../LOGOS/back.png" height="50px"></div>
+        <div onclick="window.location='../MAIN/index.html'" style="padding-top: 5px;"><img src="../LOGOS/home.png" height="50px"></div>
+    </div>
+    <div class="bg1"></div>
+    <div class="bg2"></div>
+    <!--to change a box size, use the style attribute.-->
+    <div class="container">
+        <div class="draggable" style="display: initial;width: 480px;top: 0px; left: 320px; padding-top: 40px;">
+            <p>Welcome to my launcher !</p><br>
+            <p>its still in pre alpha tho</p><br>
+            <p>for now its more like a proof of concept</p>
+        </div>
+        <div class="draggable" style="background-image: url(../images/image3ds.png); background-size:contain; top: 480px; left: 0px;" onclick="window.location='systems/index.html';"></div>
+        <div class="draggable" style="width: 480px; height: 320px;top: 320px; left: 320px;">
+            <video controls width="460px" style="border-radius: 20px;">
+                <source src="../videos/video.mp4" type="video/mp4">
+                
+            </video>
+
+        </div>
+        <div class="draggable" style="top: 640px; left: 0px; text-align: center;">Click above to see a console exemple page</div>
+    </div>
+
+    <script>
+        const GRID_SIZE = 160;
+        let dragging = null;
+        let offsetX, offsetY;
+        let placex = 0;
+        let placey = 0;
+
+        document.querySelectorAll('.draggable').forEach(element => {
+            //element.style.left = snapToGrid(placex,"x",0) + 'px';
+            //element.style.top = snapToGrid(placey,"y",0) + 'px';
+            element.addEventListener('mousedown', startDrag);
+        });
+
+        function startDrag(e) {
+            dragging = this;
+            offsetX = e.clientX - dragging.offsetLeft;
+            offsetY = e.clientY - dragging.offsetTop;
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', stopDrag);
+        }
+
+        function drag(e) {
+            if (!dragging) return;
+            let x = e.clientX - offsetX;
+            let y = e.clientY - offsetY;
+            style = window.getComputedStyle(dragging)
+            widefactor = parseInt(style.getPropertyValue('width')) - 160;
+            heightfactor = parseInt(style.getPropertyValue('height')) - 160;
+            newleft = snapToGrid(x, "x", widefactor);
+            newtop = snapToGrid(y,"y",heightfactor);
+            dragging.style.left = newleft+ 'px';
+            dragging.style.top = newtop+ 'px';
+        }
+
+        function stopDrag() {
+            dragging = null;
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', stopDrag);
+        }
+
+        function snapToGrid(value,type,factor) {
+            let r = Math.round(value / GRID_SIZE) * GRID_SIZE;
+            if (type == "x") {
+                if (r < 0) {
+                    r = 0;
+                
+                }
+                if (r > 1120-GRID_SIZE - factor) {
+                    r = 1120-GRID_SIZE - factor;
+                }
+            }
+
+            if (type == "y") {
+                if (r < 0) {
+                    r = 0;
+                }
+                if (r > 800-GRID_SIZE - factor) {
+                    r = 800-GRID_SIZE - factor;
+                }
+            }
+            return r;
+        }
+    </script>
+</body>

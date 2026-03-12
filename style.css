@@ -1,0 +1,144 @@
+* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+}
+
+body {
+            background-color: rgb(11, 30, 54);
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            background-size: 400% 400%;
+            animation: gradient 1s ease 1;
+}
+@keyframes gradient {
+                    
+  0% { background-color: black; }
+  15% {background-color: #073c5f; }                    
+  100% {background-color: #0b1f37;}
+                  
+}
+
+@keyframes in {
+    0% {
+        filter: opacity(0%) blur(50px);
+        transform: scale(50%);
+    }
+    100%{
+        transform: scale(100%);
+        filter: opacity(100%) blur(0px);
+    }
+}
+
+@keyframes out {
+    0%{
+        left: 200%;
+    }
+    100%{
+        left: 15%;
+    }
+}
+
+
+.container {
+    animation: in 1s ease-in-out 0s 1;
+            border-style: solid;
+    border-radius: 20px;
+    border-width: 5px;
+    border-color: #3498db9f;
+            left: 15%;
+            margin-top: 5%;
+            width: 1120px;
+            height: 800px;
+            background-image: 
+                /*linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.05) 75%, rgba(255, 255, 255, 0.05) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.05) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.05) 75%, rgba(255, 255, 255, 0.05) 76%, transparent 77%, transparent);
+            */
+                radial-gradient(circle, rgba(255, 255, 255, 0.51) 0%,rgba(255, 255, 255, 0.51) 9%, rgba(148, 230, 255, 0) 10%);
+                background-size: 160px 160px;
+            position: relative;
+        }
+
+        .draggable {
+            position: absolute;
+            width: 160px;
+            height: 160px;
+            background-color: #3498db71;
+            backdrop-filter: blur(10px);
+            border: 2px solid #2980b9;
+            border-radius: 20px;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            user-select: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,.1);
+            -webkit-transition-duration: 0.3s;
+            transition-duration: 0.3s;
+            -webkit-transition-property: transform;
+            transition-property: transform;
+        }
+        .draggable:hover {
+            box-shadow: 0px 0px 6px rgba(10, 125, 255, 0.74);
+            -webkit-transform: scale(1.1);
+            transform: scale(1.1);
+        }
+        .draggable:active {
+            cursor: grabbing;
+            box-shadow: 0px 0px 15px 0px rgba(255, 255, 255, 0.452);
+        }
+
+@keyframes bg1 {
+    0% {
+        left: 30px;
+        top: 40px;
+    }
+    100%{
+        left: 80%;
+        top: 10px;
+    }
+}
+
+@keyframes bg1 {
+    0% {
+        left: 30px;
+        top: 240px;
+    }
+    100%{
+        left: 60%;
+        top: 10px;
+    }
+}
+
+
+.bg1 {
+    position:  absolute;
+    overflow: hidden;
+    height: 800px;
+    width: 800px;
+    background-image: radial-gradient(circle, #5284c03a 0%, rgba(148, 230, 255, 0) 50%);
+    animation: bg1 15s ease-in-out 0s infinite alternate;
+}
+
+
+@keyframes bg2 {
+    0% {
+        left: 600px;
+        top: 24px;
+    }
+    100%{
+        left: 320px;
+        top: 300px;
+    }
+}
+
+
+.bg2 {
+    position:  absolute;
+    overflow: hidden;
+    height: 1220px;
+    width: 1220px;
+    background-image: radial-gradient(circle, #526fc02f 0%, rgba(148, 230, 255, 0) 50%);
+    animation: bg2 12s ease-in-out 0s infinite alternate;
+}
