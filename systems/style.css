@@ -1,3 +1,197 @@
+* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+}
+
 body {
-    background-color: aqua;
+            background-color: rgb(11, 30, 54);
+            font-family: Arial, Helvetica, sans-serif;
+            overflow-x: hidden;
+            overflow-y: scroll;
+            scrollbar-width: none;
+            background: linear-gradient(45deg, #0b1f37 0%, #10315b 100%);
+            background-size: 400% 400%;
+            animation: gradient 10s ease infinite;
+}
+@keyframes gradient {
+                    
+  0% { background-position: 0% 50%; }
+                    
+  50% { background-position: 100% 50%; }
+                    
+  100% { background-position: 0% 50%; }
+                  
+}
+
+
+
+@keyframes in {
+    0% {
+        filter: opacity(0%) blur(50px);
+        transform: scale(50%);
+    }
+    100%{
+        transform: scale(100%);
+        filter: opacity(100%) blur(0px);
+    }
+}
+p {
+    text-align: center;
+}
+
+.navbar {
+    position: sticky;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin: 0%;
+    height: 60px;
+    background-color: #0b1f37;
+
+}
+
+.navbar div:hover {
+    transform: scale(110%);
+    filter: brightness(130%);
+}
+
+.navbar div{
+    margin-left: 25px;
+    max-height: 60px;
+}
+
+
+@keyframes bg1 {
+    0% {
+        left: 30px;
+        top: 40px;
+    }
+    100%{
+        left: 80%;
+        top: 10px;
+    }
+}
+
+@keyframes bg1 {
+    0% {
+        left: 30px;
+        top: 240px;
+    }
+    100%{
+        left: 60%;
+        top: 10px;
+    }
+}
+
+
+.bg1 {
+    position:  absolute;
+    overflow: hidden;
+    height: 800px;
+    width: 800px;
+    background-image: radial-gradient(circle, #5284c03a 0%, rgba(148, 230, 255, 0) 50%);
+    animation: bg1 15s ease-in-out 0s infinite alternate;
+}
+
+
+@keyframes bg2 {
+    0% {
+        left: 600px;
+        top: 24px;
+    }
+    100%{
+        left: 320px;
+        top: 300px;
+    }
+}
+
+
+.bg2 {
+    position:  absolute;
+    overflow: hidden;
+    height: 1220px;
+    width: 1220px;
+    background-image: radial-gradient(circle, #526fc02f 0%, rgba(148, 230, 255, 0) 50%);
+    animation: bg2 12s ease-in-out 0s infinite alternate;
+}
+
+
+
+.system {
+    margin: 15%;
+    margin-top: 1%;
+    backdrop-filter: brightness(70%);
+    height: 160px;
+    color: aliceblue;
+    padding: 20px;
+    border-radius: 20px;
+    margin-bottom: 1%;
+}
+.system h1{
+    text-align: center;
+    color: #0b1f37;
+}
+.system h3{
+    text-align: center;
+    font-size: 11px;
+    color: #0b1f37;
+}
+.system h2{
+    margin-top: 20px;
+    text-align: center;
+    font-size: 30px;
+    color: #0b1f37;
+}
+
+
+.container {
+    margin: 15%;
+    margin-top: 0%;
+    backdrop-filter: brightness(70%);
+    color: aliceblue;
+    padding: 20px;
+    border-radius: 20px;
+}
+.game {
+    display: flex;
+    flex-direction: row;
+    margin: 1%;
+    margin-top: 1%;
+    backdrop-filter: brightness(30%);
+    color: aliceblue;
+    border-radius: 20px;
+    height: 160px;
+    background-color: #12427d;
+}
+.game img{
+    border-radius: 20px;
+    margin-right: 1%;
+}
+
+.infos p{
+    text-align: left;
+    max-width: 40%;
+    overflow-y: scroll; 
+    max-height: 90px;
+    margin-left: 1%;
+    color: #85abda;
+    scrollbar-width: thin;
+}
+
+.game button{
+    border: #0b1f37;
+    border-radius: 20px;
+    width: 80px;
+    height: 80px;
+    min-width: 80px;
+    margin-right: 40px;
+    margin-top: 40px;
+    color: #ffffff;
+}
+
+.game button:hover {
+    filter: brightness(150%);
+    transform: scale(110%);
+    box-shadow: 0px 0px  10px 0px #85abda;
 }

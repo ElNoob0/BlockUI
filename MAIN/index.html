@@ -11,6 +11,7 @@
         <img src="../LOGOS/logo simple.png" height="60px">
         <div onclick="window.location='../index.html'" style="padding-top: 5px;"><img src="../LOGOS/back.png" height="50px"></div>
         <div onclick="window.location='../MAIN/index.html'" style="padding-top: 5px;"><img src="../LOGOS/home.png" height="50px"></div>
+        <p style="position: absolute;padding-top: 22px; right:15px; color: aliceblue;" id="time">Time and date</p>
     </div>
     <div class="bg1"></div>
     <div class="bg2"></div>
@@ -21,7 +22,7 @@
             <p>its still in pre alpha tho</p><br>
             <p>for now its more like a proof of concept</p>
         </div>
-        <div class="draggable" style="background-image: url(../images/image3ds.png); background-size:contain; top: 480px; left: 0px;" onclick="window.location='systems/index.html';"></div>
+        <div class="draggable" style="background-image: url(../images/image3ds.png); background-size:contain; top: 480px; left: 0px;" onclick="window.location='../systems/index.html';"></div>
         <div class="draggable" style="width: 480px; height: 320px;top: 320px; left: 320px;">
             <video controls width="460px" style="border-radius: 20px;">
                 <source src="../videos/video.mp4" type="video/mp4">
@@ -38,6 +39,18 @@
         let offsetX, offsetY;
         let placex = 0;
         let placey = 0;
+        const t = new Date()
+
+
+        function updateTime() {
+            const t = new Date();
+            document.getElementById("time").textContent =
+                t.getHours() + " : " + t.getMinutes() + " : " + t.getSeconds();
+        }
+
+        window.onload = function () {
+            setInterval(updateTime, 500);
+        };
 
         document.querySelectorAll('.draggable').forEach(element => {
             //element.style.left = snapToGrid(placex,"x",0) + 'px';

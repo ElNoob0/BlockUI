@@ -7,5 +7,99 @@
     <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-    
+    <div class="navbar">
+        <img src="../LOGOS/logo simple.png" height="60px">
+        <div onclick="window.location='../index.html'" style="padding-top: 5px;"><img src="../LOGOS/back.png" height="50px"></div>
+        <div onclick="window.location='../MAIN/index.html'" style="padding-top: 5px;"><img src="../LOGOS/home.png" height="50px"></div>
+        <p style="position: absolute;padding-top: 22px; right:15px; color: aliceblue;" id="time">Time and date</p>
+    </div>
+    <div class="bg1"></div>
+    <div class="bg2"></div>
+    <div class="system" style="background-image: url(../images/3ds\ banner.png); background-size: cover; background-position: center;">
+        <h1>Nintendo 3ds</h1>
+        <h3>by Nintendo</h3>
+        <h2>4 Games</h2>
+        
+    </div>
+    <div class="container">
+        <div class="game" style="background-color: rgb(57, 0, 34);">
+            <img src="games/71EJsujGS+S.jpg" height="160px">
+            <div class="infos">
+                <h1>Super Mario 3d Land</h1>
+                <h3>Nintendo - 2011</h3>
+                <p>Super Mario 3D Land is the second 3D Super Mario platformer for a handheld device, and the successor to Super Mario Galaxy 2. The game is closely based on side-scrolling Mario games, as it combine elements from both traditional 2D Mario games and modern free-roaming 3D Mario games. It also introduces elements into the series, including power-ups and gameplay mechanics.</p>
+            </div>
+            <button type="button" style="background-color: rgb(103, 69, 145);">edit</button>
+            <button type="button" style="background-color: #127d6f;">play</button>
+
+        </div>
+        <div class="game" style="background-color: rgb(30, 0, 57);">
+            <img src="games/moon.jpg" height="160px">
+            <div class="infos">
+                <h1>Pokemon Moon</h1>
+                <h3>Game Freak - 2016</h3>
+                <p>Embark on a new adventure as a Pokémon Trainer and catch, battle, and trade all-new Pokémon on the tropical islands of the Alola Region. Discover the Z-Moves and unleash these intense attacks in battle. Call upon Pokémon with Poké Ride to discover new areas across the region and take on the Island Challenge Trials to become the Pokémon Champion!</p>
+            </div>
+            <button type="button" style="background-color: rgb(103, 69, 145);">edit</button>
+            <button type="button" style="background-color: #127d6f;">play</button>
+
+        </div>
+        <div class="game" style="background-color: rgb(0, 39, 57);">
+            <img src="games/persona.jpg" height="160px">
+            <div class="infos">
+                <h1>Persona Q2</h1>
+                <h3>P Studio / Atlus - 2018</h3>
+                <p>The dream meeting of Persona 3, 4, 5! Welcome to the movie world (Labyrinth).The latest RPG in the Persona series! A new storyline in Persona Q, this time focusing on P5. The most number of party members in the Persona series with a total of 28 people! A dream RPG where P3, P4, and P5 characters meet to unravel the mystery begins!</p>
+            </div>
+            <button type="button" style="background-color: rgb(103, 69, 145);">edit</button>
+            <button type="button" style="background-color: #127d6f;">play</button>
+        </div>
+        <div class="game" style="background-color: rgb(57, 0, 20);">
+            <img src="games/Shin-Megami-Tensei-Devil-Survivor-Overclocked.jpg" height="160px">
+            <div class="infos">
+                <h1 style="font-size: 27px;">Shin Megami Tensei: Devil Survivor Overclocked</h1>
+                <h3>Atlus - 2011</h3>
+                <p>Devil Survivor Overclocked is an enhanced port of Devil Survivor made exclusively for the Nintendo 3DS. The port features enhanced art, voice acting for almost every piece of dialogue, new demons and an extended story (8th Day).</p>
+            </div>
+            <button type="button" style="background-color: rgb(103, 69, 145);">edit</button>
+            <button type="button" style="background-color: #127d6f;">play</button>
+        </div>
+                <div class="game" style="background-color: rgb(34, 74, 57);">
+            <img src="games/Ocarina of Time 3D.jpg" height="160px">
+            <div class="infos">
+                <h1>Ocarina of Time 3D</h1>
+                <h3>Grezzo - 2011</h3>
+                <p>The Legend of Zelda: Ocarina of Time 3D is a remake of Ocarina of Time with more up-to-date graphics, streamlined UI and different additional game modes. Most textures are significantly more detailed, and many models are more faithful to the game's concept and promotional art. In addition, the frame rate has been increased to 30 FPS compared to the original's 20 FPS.</p>
+            </div>
+            <button type="button" style="background-color: rgb(103, 69, 145);">edit</button>
+            <button type="button" style="background-color: #127d6f;">play</button>
+        </div>
+        <!--<div class="game" style="background-color: rgb(0, 0, 0);">
+            <img src="" height="160px">
+            <div class="infos">
+                <h1>Title</h1>
+                <h3>Dev - Year</h3>
+                <p>Description</p>
+            </div>
+            <button type="button" style="background-color: rgb(103, 69, 145);">edit</button>
+            <button type="button" style="background-color: #127d6f;">play</button>
+        </div>-->
+    </div>
+    <script>
+        
+        const t = new Date()
+
+
+        function updateTime() {
+            const t = new Date();
+            document.getElementById("time").textContent =
+                t.getHours() + " : " + t.getMinutes() + " : " + t.getSeconds();
+        }
+
+        window.onload = function () {
+            setInterval(updateTime, 500);
+        };
+
+        
+    </script>
 </body>
