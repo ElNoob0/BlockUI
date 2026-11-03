@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iisu ahh launcher</title>
+    <!--<link rel="icon" href="icon" type="image/png" />-->
+    <link rel="stylesheet" href="../style.css" />
+</head> 
+<body class="changelog-page" style="overflow-y: scroll;">
+    <div class="navbar" style="position: sticky; top: 0px; width: 100%;">
+        <img src="../LOGOS/logo simple.png" height="60px">
+        <div onclick="window.location='../index.html'" style="padding-top: 5px;"><img src="../LOGOS/back.png" height="50px"></div>
+        <p style="position: absolute;padding-top: 22px; right:15px; color: aliceblue;" id="time">Time and date</p>
+    </div>
+    <div class="bg1"></div>
+    <div class="bg2"></div>
+
+
+
+    <div class="textBG">
+        <h1>How to setup and use the self-hosted app launcher</h1><br>
+        <h3>Step 1: Initial Setup</h3>
+        <p>
+            <br>
+             You will need to have Python installed on your machine.<br>
+             If you don't have it, download and install it from the official Python website. Make sure to add Python to your system's PATH during installation.<br>
+             <br>
+             Next, get the bat file from the box below and execute it in a "BlockUI Server" folder (you can call it like you want)<br>
+             <br>
+             Edit the python script it generated to put the URL of block UI in the ALLOWED_ORIGINS variable (change the "http://127.0.0.1:5500")<br>
+             You now have all you need for the following steps.<br>
+        </p>
+        <a href="../download/BlockUI_scripts_setup.bat" download>
+            <button style="color: #007ca2; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer;" >Download setup script</button>
+        </a><br><br>
+        <h3>Step 2 : running the server</h3>
+        <p><br>
+             open a CMD in the blockUI Server folder and type : python server.py<br>
+             You should see a message saying that the server is running on http://127.0.0:5000.<br>
+             Now copy the api token displayed in the CMD, go to your blockui main menu and paste it after clicking the key icon.<br>
+<br>
+             Everything should now work !<br>
+        </p><br><br>
+        <h3>Step 3 : actually use blockUI</h3>
+        <p><br>
+             Create a new block and paste the path of the program you wanna launch in the right field.<br>
+            <br>
+             Now, when you click on this block, the app should open. Check the bottom right corner of bloockUI to see if something happened.<br>
+        </p><br><br>
+        <h3>Tests</h3>
+        <p> <br>
+            Use the notepad launcher to test if the connection works.<br>
+            This one should work on any windows machine, so if it doesn't work, check your setup.<br>
+        </p><br><br>
+
+        if you encounter any issue, make a report on the github, ill maybe make a discord for it later<br>
+
+    </div>
+
+    <script>
+        const t = new Date()
+
+
+        function updateTime() {
+            const t = new Date();
+            document.getElementById("time").textContent =
+                t.getHours() + " : " + t.getMinutes() + " : " + t.getSeconds();
+        }
+
+        window.onload = function () {
+            setInterval(updateTime, 500);
+        };
+
+    </script>
+</body>

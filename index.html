@@ -6,7 +6,7 @@
     <!--<link rel="icon" href="icon" type="image/png" />-->
     <link rel="stylesheet" href="style.css" />
 </head> 
-<body>
+<body class="home-page" style="overflow-y: hidden;">
     <div class="bg1"></div>
     <div class="bg2"></div>
     <!--to change a box size, use the style attribute.-->
@@ -19,15 +19,19 @@
         <div class="draggable" style="width: 160px; height: 160px; left: 960px; top: 640px;" onclick="window.location='changelog/index.html';">
             <p>See changelog</p>
         </div>
+        <div class="draggable" style="width: 160px; height: 160px; left: 0px; top: 640px;" onclick="window.location='selfHost_tuto/index.html';">
+            <p>Setup Tutorial</p>
+        </div>
         <div class="draggable" style="left: 320px;top: 480px; text-align: center;">
             made by ENO-Yosh !<br>
-            Version pre 0.0.3</div>
+            Version pre 0.0.4</div>
     </div>
-    <p style="color: aliceblue; text-align: center; margin-top: 10px;">You should try to grab something and move it arround !</p>
+    <p style="color: rgb(88, 0, 105); text-align: center; margin-top: 10px;">You should try to grab something and move it arround !</p>
     <script>
         const GRID_SIZE = 160;
         let dragging = null;
         let offsetX, offsetY;
+        let lastParticleTime = 0;
         let placex = 0;
         let placey = 0;
 
@@ -56,6 +60,27 @@
             newtop = snapToGrid(y,"y",heightfactor);
             dragging.style.left = newleft+ 'px';
             dragging.style.top = newtop+ 'px';
+            const now = performance.now();
+            if (now - lastParticleTime >= 28) {
+                const bounds = dragging.getBoundingClientRect();
+                emitDragParticle(
+                    bounds.left + Math.random() * bounds.width,
+                    bounds.top + Math.random() * bounds.height
+                );
+                lastParticleTime = now;
+            }
+        }
+
+        function emitDragParticle(x, y) {
+            const particle = document.createElement('span');
+            particle.className = 'drag-particle';
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+            particle.style.setProperty('--particle-size', `${7 + Math.random() * 8}px`);
+            particle.style.setProperty('--drift-x', `${(Math.random() - 0.5) * 34}px`);
+            particle.style.setProperty('--drift-y', `${-12 - Math.random() * 28}px`);
+            document.body.appendChild(particle);
+            window.setTimeout(() => particle.remove(), 750);
         }
 
         function stopDrag() {

@@ -4,19 +4,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>iisu ahh launcher</title>
     <!--<link rel="icon" href="icon" type="image/png" />-->
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="../style.css" />
     <script src="script.js" defer></script>
 </head> 
-<body>
+<body class="main-page" style="overflow-y: hidden;">
     <div class="navbar">
         <img src="../LOGOS/logo simple.png" height="60px">
-        <div onclick="window.location='../index.html'" style="padding-top: 5px;"><img src="../LOGOS/back.png" height="50px"></div>
-        <div onclick="show_block_maker()" style="padding-top: 5px;"><img src="../LOGOS/addBlock.png" height="50px"></div>
+        <div onclick="window.location='../index.html'" style="padding-top: 5px;"><img src="../LOGOS/home.png" height="50px" title="Home" aria-label="Home"></div>
+        <div onclick="show_block_maker()" style="padding-top: 5px;"><img src="../LOGOS/addBlock.png" height="50px" title="Add a Block" aria-label="Add a Block"></div>
+        <button id="edit-mode-button" class="nav-control" type="button" onclick="toggleEditMode()" aria-pressed="false" title="Enter editing mode" aria-label="Enter editing mode"><img src="../LOGOS/edit.png" alt=""></button>
+        <div id="launcher-token-button" onclick="setLauncherToken()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setLauncherToken(); }" title="Set local launcher API token" aria-label="Set local launcher API token" role="button" tabindex="0" style="padding-top: 5px;"><img src="../LOGOS/apiKey.png" height="50px"></div>
         <!-- <div onclick="window.location='../MAIN/index.html'" style="padding-top: 5px;"><img src="../LOGOS/home.png" height="50px"></div> -->
         <p style="position: absolute;padding-top: 22px; right:15px; color: aliceblue;" id="time">Time and date</p>
     </div>
     <div class="bg1"></div>
     <div class="bg2"></div>
+    <div class="edit-mode-shade" aria-hidden="true"></div>
 
 
 
@@ -30,50 +33,234 @@
 
 
     <div id="newblock" style="display: none;">
-        <form id="form" onsubmit="single_block(); return false;">
+        <form id="form" onsubmit="createBlockFromForm(event); return false;">
             <p>Pos X</p><input type="number" id="posx" title="position X" value="1" min="1" max="7"/>
             <p>Pos Y</p><input type="number" id="posy" title="position Y" value="1" min="1" max="5"/>
             <p>Block Width</p><input type="number" id="width" title="block width" value="1" min="1" max="6"/>
             <p>Block Height</p><input type="number" id="height" title="block height" value="1" min="1" max="5"/>
+            <p>Windows executable name or path</p>
+            <input type="text" id="appname" title="Windows executable name or path" list="available-apps" placeholder="e.g. notepad.exe or full path" autocomplete="off"/>
+            <datalist id="available-apps">
+                <option value="notepad.exe"></option>
+                <option value="calc.exe"></option>
+                <option value="mspaint.exe"></option>
+            </datalist>
             <p>Block Content (HTML or text)</p><input type="text" id="content" title="block content (HTML or text)"/>
+            <p>Block Background Image</p><input type="file" id="backgroundImage" title="Block background image" accept="image/*"/>
+            <p>Block Text Color</p><input type="color" id="textColor" title="Block text color" value="#394255"/>
             <input id="morebtn" type="button" value="More Options" onclick="more()" style="background-color: #1e569a;"/>
             <p class="more" style="display: none;">Custom CSS</p><input class="more" type="text" id="customcss" title="Custom CSS" style="display: none;"/>
             <p class="more" style="display: none;">Custom OnClick</p><input class="more" type="text" id="customonclick" title="Custom OnClick" style="display: none;"/>
-            <input type="submit" value="Create block" onclick="document.getElementById('newblock').style.display = 'none'; single_block({x: document.getElementById('posx').value * 160, y: document.getElementById('posy').value * 160, width: document.getElementById('width').value * 160, height: document.getElementById('height').value * 160, content: document.getElementById('content').value, custom_style: document.getElementById('customcss').value, custom_onclick: document.getElementById('customonclick').value});"/>
-            <input style="background-color: #9a1e1e;" type="button" value="Cancel" onclick="document.getElementById('newblock').style.display = 'none';"/>
+            <input type="submit" value="Create block"/>
+            <input type="button" value="Cancel" onclick="document.getElementById('newblock').style.display = 'none';"/>
         </form>
     </div>
+    <div id="block-settings" style="display: none;">
+        <form class="block-modal" onsubmit="saveBlockSettings(event); return false;">
+            <h2>Edit block</h2>
+            <label for="edit-content">Block text / HTML</label>
+            <textarea id="edit-content" rows="6"></textarea>
+            <label for="edit-text-color">Text color</label>
+            <input id="edit-text-color" type="color" value="#394255"/>
+            <label for="edit-width">Width (pixels)</label>
+            <input id="edit-width" type="number" min="160" max="1120" step="160" required/>
+            <label for="edit-height">Height (pixels)</label>
+            <input id="edit-height" type="number" min="160" max="800" step="160" required/>
+            <div class="block-modal-actions">
+                <button type="submit">Save changes</button>
+                <button type="button" class="delete-block-button" onclick="deleteEditedBlock()">Delete block</button>
+                <button type="button" onclick="closeBlockSettings()">Cancel</button>
+            </div>
+        </form>
+    </div>
+    <p id="launcher-status" role="status" aria-live="polite"></p>
     <script>
 
-        function single_block() {
-            console.log("creating single block")
-            var bdata = new FormData(document.getElementById("form"));
-            let newblock = document.createElement("div");
-            newblock.classList.add("draggable");
-            newblock.style.left = bdata.get("posx");
-            newblock.style.top = bdata.get("posy");
-            newblock.style.width = bdata.get("width");
-            newblock.style.height = bdata.get("height");
-            newblock.innerHTML = bdata.get("content");
-            if (bdata.get("customcss")) {
-                newblock.style.cssText += bdata.get("customcss");
+        const LOCAL_LAUNCHER_API = "http://127.0.0.1:5000";
+        let isEditingMode = false;
+        let editingBlock = null;
+
+        function setLauncherToken() {
+            const token = window.prompt("Enter the local launcher API token shown by the server:");
+            if (token === null) {
+                return;
             }
-            newblock.onclick = function() {
-                if (bdata.get("customonclick")) {
-                    eval(bdata.get("customonclick"));
-                }
-            };
-            document.querySelector(".container").appendChild(newblock);
-            newblock.addEventListener('mousedown', startDrag);
+
+            const cleanedToken = token.trim();
+            const status = document.getElementById("launcher-status");
+            if (!cleanedToken) {
+                sessionStorage.removeItem("localLauncherToken");
+                status.textContent = "Local launcher token cleared.";
+                return;
+            }
+
+            sessionStorage.setItem("localLauncherToken", cleanedToken);
+            status.textContent = "Local launcher token saved for this browser session.";
         }
 
-        var form = document.getElementById("form");
-        function handleForm(event) { event.preventDefault(); } 
-        form.addEventListener('submit', handleForm);
+        async function launchLocalApp(executable) {
+            const status = document.getElementById("launcher-status");
+            let token = sessionStorage.getItem("localLauncherToken");
+
+            if (!token) {
+                token = window.prompt("Enter the local launcher API token shown by the server:");
+            }
+            if (!token) {
+                throw new Error("App launch cancelled: an API token is required.");
+            }
+
+            for (let attempt = 0; attempt < 2; attempt++) {
+                sessionStorage.setItem("localLauncherToken", token);
+                const response = await fetch(
+                    `${LOCAL_LAUNCHER_API}/api/launch`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-Launcher-Token": token
+                        },
+                        body: JSON.stringify({ path: executable })
+                    }
+                );
+
+                if (response.status === 401 && attempt === 0) {
+                    sessionStorage.removeItem("localLauncherToken");
+                    token = window.prompt("The token was rejected. Enter the current local launcher API token:");
+                    if (!token) {
+                        throw new Error("App launch cancelled: an API token is required.");
+                    }
+                    continue;
+                }
+
+                const responseText = await response.text();
+                if (response.status === 401) {
+                    sessionStorage.removeItem("localLauncherToken");
+                }
+                if (!response.ok) {
+                    throw new Error(`Launcher API error (${response.status}): ${responseText || response.statusText}`);
+                }
+
+                let result;
+                try {
+                    result = JSON.parse(responseText);
+                } catch {
+                    throw new Error("The launcher returned an invalid response.");
+                }
+                if (result.status !== "launched") {
+                    throw new Error(result.error || "The launcher did not confirm the app launch.");
+                }
+
+                const appName = result.path || executable;
+                if (result.focus === "foreground") {
+                    status.textContent = `${appName} launched and brought to the foreground.`;
+                } else if (result.focus === "flashing") {
+                    status.textContent = `${appName} launched; Windows is flashing its taskbar button.`;
+                } else {
+                    status.textContent = `${appName} launched, but its window could not be found to focus or flash.`;
+                }
+                return;
+            }
+
+            sessionStorage.removeItem("localLauncherToken");
+            throw new Error("The launcher rejected the API token.");
+        }
+
+        function createBlockFromForm(event) {
+            event.preventDefault();
+            const executable = document.getElementById("appname").value.trim();
+            const block = document.createElement("div");
+            block.classList.add("draggable");
+            block.style.left = `${Number(document.getElementById("posx").value) * 160}px`;
+            block.style.top = `${Number(document.getElementById("posy").value) * 160}px`;
+            block.style.width = `${Number(document.getElementById("width").value) * 160}px`;
+            block.style.height = `${Number(document.getElementById("height").value) * 160}px`;
+
+            const content = document.getElementById("content").value;
+            if (content) {
+                block.innerHTML = content;
+            } else if (executable) {
+                const label = document.createElement("p");
+                label.textContent = `Launch ${executable}`;
+                block.appendChild(label);
+            }
+
+            block.style.color = document.getElementById("textColor").value;
+
+            const backgroundImage = document.getElementById("backgroundImage").files[0];
+            if (backgroundImage) {
+                const imageUrl = URL.createObjectURL(backgroundImage);
+                block.style.backgroundImage = `url("${imageUrl}")`;
+                block.style.backgroundPosition = "center";
+                block.style.backgroundSize = "cover";
+                block.style.backgroundRepeat = "no-repeat";
+            }
+
+            const customStyle = document.getElementById("customcss").value;
+            if (customStyle) {
+                block.style.cssText += customStyle;
+            }
+
+            const customOnClick = document.getElementById("customonclick").value;
+            if (executable) {
+                block.addEventListener("click", () => {
+                    const status = document.getElementById("launcher-status");
+                    status.textContent = `Launching ${executable}...`;
+                    if (isEditingMode) {
+                        return;
+                    }
+                    launchLocalApp(executable).catch(error => {
+                        status.textContent = error.message;
+                    });
+                });
+            } else if (customOnClick) {
+                block.onclick = () => {
+                    if (!isEditingMode) {
+                        eval(customOnClick);
+                    }
+                };
+            }
+
+            const savedOnClick = executable
+                ? `launchLocalApp(${JSON.stringify(executable)}).catch(error => document.getElementById('launcher-status').textContent = error.message);`
+                : customOnClick;
+            const savedBackgroundImage = block.style.backgroundImage.includes("blob:")
+                ? ""
+                : block.style.backgroundImage
+                    ? `background-image: ${block.style.backgroundImage}; background-position: center; background-size: cover; background-repeat: no-repeat;`
+                    : "";
+
+            const blockData = {
+                x: block.style.left,
+                y: block.style.top,
+                width: block.style.width,
+                height: block.style.height,
+                content: block.innerHTML,
+                custom_style: [
+                    `color: ${block.style.color};`,
+                    savedBackgroundImage,
+                    customStyle
+                ].filter(Boolean).join(" "),
+                custom_onclick: savedOnClick
+            };
+            block.blockData = blockData;
+            block1.push(blockData);
+
+            document.querySelector(".container").appendChild(block);
+            block.addEventListener("mousedown", startDrag);
+            if (isEditingMode) {
+                addBlockSettingsButton(block);
+            }
+            if (backgroundImage) {
+                document.getElementById("launcher-status").textContent =
+                    "Uploaded background images are temporary and won't return after reloading the page.";
+            }
+            document.getElementById("newblock").style.display = "none";
+        }
 
         const GRID_SIZE = 160;
         let dragging = null;
         let offsetX, offsetY;
+        let lastParticleTime = 0;
         let placex = 0;
         let placey = 0;
         const t = new Date()
@@ -96,6 +283,9 @@
         });
 
         function startDrag(e) {
+            if (!isEditingMode || e.target.closest(".block-settings-trigger")) {
+                return;
+            }
             dragging = this;
             offsetX = e.clientX - dragging.offsetLeft;
             offsetY = e.clientY - dragging.offsetTop;
@@ -114,9 +304,34 @@
             newtop = snapToGrid(y,"y",heightfactor);
             dragging.style.left = newleft+ 'px';
             dragging.style.top = newtop+ 'px';
+            const now = performance.now();
+            if (now - lastParticleTime >= 28) {
+                const bounds = dragging.getBoundingClientRect();
+                emitDragParticle(
+                    bounds.left + Math.random() * bounds.width,
+                    bounds.top + Math.random() * bounds.height
+                );
+                lastParticleTime = now;
+            }
+        }
+
+        function emitDragParticle(x, y) {
+            const particle = document.createElement('span');
+            particle.className = 'drag-particle';
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+            particle.style.setProperty('--particle-size', `${7 + Math.random() * 8}px`);
+            particle.style.setProperty('--drift-x', `${(Math.random() - 0.5) * 34}px`);
+            particle.style.setProperty('--drift-y', `${-12 - Math.random() * 28}px`);
+            document.body.appendChild(particle);
+            window.setTimeout(() => particle.remove(), 750);
         }
 
         function stopDrag() {
+            if (dragging && dragging.blockData) {
+                dragging.blockData.x = dragging.style.left;
+                dragging.blockData.y = dragging.style.top;
+            }
             dragging = null;
             document.removeEventListener('mousemove', drag);
             document.removeEventListener('mouseup', stopDrag);
@@ -166,6 +381,103 @@
                 document.getElementById("newblock").style.display = "initial";
         }
 
+        function toggleEditMode() {
+            isEditingMode = !isEditingMode;
+            document.body.classList.toggle("editing-mode", isEditingMode);
+            const button = document.getElementById("edit-mode-button");
+            button.setAttribute("aria-pressed", String(isEditingMode));
+            button.title = isEditingMode ? "Exit editing mode" : "Enter editing mode";
+            button.setAttribute("aria-label", button.title);
+
+            document.querySelectorAll(".draggable").forEach(block => {
+                if (isEditingMode) {
+                    addBlockSettingsButton(block);
+                } else {
+                    block.querySelector(".block-settings-trigger")?.remove();
+                }
+            });
+
+            if (!isEditingMode) {
+                closeBlockSettings();
+                saveBlock1();
+            }
+        }
+
+        function addBlockSettingsButton(block) {
+            if (block.querySelector(".block-settings-trigger")) {
+                return;
+            }
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "block-settings-trigger";
+            button.textContent = "⚙";
+            button.title = "Edit block settings";
+            button.setAttribute("aria-label", "Edit block settings");
+            button.addEventListener("mousedown", event => event.stopPropagation());
+            button.addEventListener("click", event => {
+                event.stopPropagation();
+                openBlockSettings(block);
+            });
+            block.appendChild(button);
+        }
+
+        function openBlockSettings(block) {
+            editingBlock = block;
+            document.getElementById("edit-content").value = block.blockData.content;
+            document.getElementById("edit-text-color").value = colorToHex(block.style.color || "#394255");
+            document.getElementById("edit-width").value = parseInt(block.style.width, 10) || 160;
+            document.getElementById("edit-height").value = parseInt(block.style.height, 10) || 160;
+            document.getElementById("block-settings").style.display = "flex";
+        }
+
+        function colorToHex(color) {
+            if (color.startsWith("#")) {
+                return color.length === 4
+                    ? `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`
+                    : color.slice(0, 7);
+            }
+            const channels = color.match(/\d+/g);
+            return channels && channels.length >= 3
+                ? `#${channels.slice(0, 3).map(channel => Number(channel).toString(16).padStart(2, "0")).join("")}`
+                : "#394255";
+        }
+
+        function saveBlockSettings(event) {
+            event.preventDefault();
+            if (!editingBlock || !editingBlock.blockData) {
+                return;
+            }
+
+            const data = editingBlock.blockData;
+            const color = document.getElementById("edit-text-color").value;
+            data.content = document.getElementById("edit-content").value;
+            editingBlock.innerHTML = data.content;
+            editingBlock.style.color = color;
+            editingBlock.style.width = `${Number(document.getElementById("edit-width").value)}px`;
+            editingBlock.style.height = `${Number(document.getElementById("edit-height").value)}px`;
+            data.width = editingBlock.style.width;
+            data.height = editingBlock.style.height;
+            data.custom_style = `${(data.custom_style || "").replace(/(^|;)\s*color\s*:[^;]*/i, "")} color: ${color};`.trim();
+            if (isEditingMode) {
+                addBlockSettingsButton(editingBlock);
+            }
+            closeBlockSettings();
+        }
+
+        function deleteEditedBlock() {
+            if (!editingBlock) {
+                return;
+            }
+            const blockToDelete = editingBlock;
+            block1 = block1.filter(block => block !== blockToDelete.blockData);
+            blockToDelete.remove();
+            closeBlockSettings();
+        }
+
+        function closeBlockSettings() {
+            document.getElementById("block-settings").style.display = "none";
+            editingBlock = null;
+        }
 
 
     </script>
