@@ -1,14 +1,13 @@
 # BlockUI
 
 # You can try the demo here : https://elnoob0.github.io/BlockUI/
-# If you come directly after an update, wait like 15 minutes before entering the demo. Github has a latency between commited changes and the BlockUI web demo
-(this mean you can see a outdated version) 
+# make sure to put the github page url in the python script if you use blockUI from here !
+(read the tutorial if you dont know what im talking about)
 
-blockUI is a upcoming games launcher for windows (linux and mac too i think). 
+blockUI is a upcoming games launcher for windows (NOT linux and mac for now). 
 Its web based so it should run on anything powerful enough (this means it will not work on 3ds).
 
-Anyways for now its more of a concept since you cant really launch anything.
+It can be pretty buggy, everything worked on my end but we never know...
 
-Current version is pre alpha 0.0.3.
+Current version is alpha 0.1.0.
 
-moved repo to my real account 
