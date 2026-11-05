@@ -8,12 +8,27 @@
     <script src="script.js" defer></script>
 </head> 
 <body class="main-page" style="overflow-y: hidden;">
+
+    
+    <audio id="clickSound" src="../sounds/touch.mp3"></audio>
+    <audio id="toggleEditMode" src="../sounds/editmode.mp3"></audio>
+    <audio id="openSound" src="../sounds/open.mp3"></audio>
+    <audio id="closeSound" src="../sounds/close.mp3"></audio>
+    <audio id="touchSound" src="../sounds/touch.mp3"></audio>
+    <audio id="saveSound" src="../sounds/save.mp3"></audio>
+    <audio id="deleteSound" src="../sounds/delete.mp3"></audio>
+
+
+
+
+
     <div class="navbar">
         <img src="../LOGOS/logo simple.png" height="60px">
-        <div onclick="window.location='../index.html'" style="padding-top: 5px;"><img src="../LOGOS/home.png" height="50px" title="Home" aria-label="Home"></div>
-        <div onclick="show_block_maker()" style="padding-top: 5px;"><img src="../LOGOS/addBlock.png" height="50px" title="Add a Block" aria-label="Add a Block"></div>
-        <button id="edit-mode-button" class="nav-control" type="button" onclick="toggleEditMode()" aria-pressed="false" title="Enter editing mode" aria-label="Enter editing mode"><img src="../LOGOS/edit.png" alt=""></button>
-        <div id="launcher-token-button" onclick="setLauncherToken()" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setLauncherToken(); }" title="Set local launcher API token" aria-label="Set local launcher API token" role="button" tabindex="0" style="padding-top: 5px;"><img src="../LOGOS/apiKey.png" height="50px"></div>
+        <div onclick="window.location='../index.html';document.getElementById('clickSound').play();" style="padding-top: 5px;"><img src="../LOGOS/home.png" height="50px" title="Home" aria-label="Home"></div>
+        <div onclick="show_block_maker();document.getElementById('openSound').play();" style="padding-top: 5px;"><img src="../LOGOS/addBlock.png" height="50px" title="Add a Block" aria-label="Add a Block"></div>
+        <button id="edit-mode-button" class="nav-control" type="button" onclick="toggleEditMode();document.getElementById('toggleEditMode').play();" aria-pressed="false" title="Enter editing mode" aria-label="Enter editing mode"><img src="../LOGOS/edit.png" alt=""></button>
+        <button class="nav-control" type="button" onclick="showModal('save-load');document.getElementById('openSound').play();" title="Save or load layout" aria-label="Save or load layout"><img src="../LOGOS/save.png" alt=""></button>
+        <div id="launcher-token-button" onclick="setLauncherToken();document.getElementById('clickSound').play();" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setLauncherToken(); }" title="Set local launcher API token" aria-label="Set local launcher API token" role="button" tabindex="0" style="padding-top: 5px;"><img src="../LOGOS/apiKey.png" height="50px"></div>
         <!-- <div onclick="window.location='../MAIN/index.html'" style="padding-top: 5px;"><img src="../LOGOS/home.png" height="50px"></div> -->
         <p style="position: absolute;padding-top: 22px; right:15px; color: aliceblue;" id="time">Time and date</p>
     </div>
@@ -34,8 +49,8 @@
 
     <div id="newblock" style="display: none;">
         <form id="form" onsubmit="createBlockFromForm(event); return false;">
-            <p>Pos X</p><input type="number" id="posx" title="position X" value="1" min="1" max="7"/>
-            <p>Pos Y</p><input type="number" id="posy" title="position Y" value="1" min="1" max="5"/>
+            <p>Pos X</p><input type="number" id="posx" title="position X" value="0" min="0" max="7"/>
+            <p>Pos Y</p><input type="number" id="posy" title="position Y" value="0" min="0" max="5"/>
             <p>Block Width</p><input type="number" id="width" title="block width" value="1" min="1" max="6"/>
             <p>Block Height</p><input type="number" id="height" title="block height" value="1" min="1" max="5"/>
             <p>Windows executable name or path</p>
@@ -48,11 +63,11 @@
             <p>Block Content (HTML or text)</p><input type="text" id="content" title="block content (HTML or text)"/>
             <p>Block Background Image</p><input type="file" id="backgroundImage" title="Block background image" accept="image/*"/>
             <p>Block Text Color</p><input type="color" id="textColor" title="Block text color" value="#394255"/>
-            <input id="morebtn" type="button" value="More Options" onclick="more()" style="background-color: #1e569a;"/>
+            <input id="morebtn" type="button" value="More Options" onclick="more();document.getElementById('touchSound').play();" style="background-color: #1e569a;"/>
             <p class="more" style="display: none;">Custom CSS</p><input class="more" type="text" id="customcss" title="Custom CSS" style="display: none;"/>
             <p class="more" style="display: none;">Custom OnClick</p><input class="more" type="text" id="customonclick" title="Custom OnClick" style="display: none;"/>
             <input type="submit" value="Create block"/>
-            <input type="button" value="Cancel" onclick="document.getElementById('newblock').style.display = 'none';"/>
+            <input type="button" value="Cancel" onclick="hideModal('newblock');document.getElementById('closeSound').play();"/>
         </form>
     </div>
     <div id="block-settings" style="display: none;">
@@ -66,19 +81,55 @@
             <input id="edit-width" type="number" min="160" max="1120" step="160" required/>
             <label for="edit-height">Height (pixels)</label>
             <input id="edit-height" type="number" min="160" max="800" step="160" required/>
+            <button id="edit-more-button" type="button" aria-expanded="false" aria-controls="edit-more-options" onclick="toggleEditMore()" style="min-height: 40px;">Show more</button>
+            <div id="edit-more-options" hidden>
+                <label for="edit-appname">Windows executable name or path</label>
+                <input id="edit-appname" type="text" list="edit-available-apps" placeholder="e.g. notepad.exe or full path" autocomplete="off"/>
+                <datalist id="edit-available-apps">
+                    <option value="notepad.exe"></option>
+                    <option value="calc.exe"></option>
+                    <option value="mspaint.exe"></option>
+                </datalist>
+                <label for="edit-customcss">Custom CSS</label>
+                <textarea id="edit-customcss" rows="3"></textarea>
+                <label for="edit-customonclick">Custom OnClick</label>
+                <textarea id="edit-customonclick" rows="3"></textarea>
+                <label for="edit-background-image">Block background image</label>
+                <input id="edit-background-image" type="file" accept="image/*"/>
+                <label class="remove-background-image"><input id="edit-remove-background-image" type="checkbox"/> Remove current background image</label>
+                <small>Uploaded background images are temporary and won't return after reloading.</small>
+            </div>
             <div class="block-modal-actions">
-                <button type="submit">Save changes</button>
-                <button type="button" class="delete-block-button" onclick="deleteEditedBlock()">Delete block</button>
-                <button type="button" onclick="closeBlockSettings()">Cancel</button>
+                <button type="submit" onclick="document.getElementById('saveSound').play();">Save changes</button>
+                <button type="button" class="delete-block-button" onclick="deleteEditedBlock();document.getElementById('deleteSound').play();">Delete block</button>
+                <button type="button" onclick="closeBlockSettings();document.getElementById('closeSound').play();">Cancel</button>
             </div>
         </form>
+    </div>
+    <div id="save-load" style="display: none;">
+        <section class="block-modal save-load-modal" aria-labelledby="save-load-title">
+            <h2 id="save-load-title">Save or load layout</h2>
+            <p>Save your current block layout to a file, or load a previously saved layout.</p>
+            <small>Uploaded background images are temporary and are not included in save files.</small>
+            <button type="button" onclick="downloadLayout();document.getElementById('saveSound').play();">Download layout</button>
+            <label for="layout-file">Load a layout file</label>
+            <input id="layout-file" type="file" accept=".json,application/json" onchange="loadLayoutFile(event)"/>
+            <div class="block-modal-actions">
+                <button type="button" onclick="hideModal('save-load');document.getElementById('closeSound').play();">Close</button>
+            </div>
+        </section>
     </div>
     <p id="launcher-status" role="status" aria-live="polite"></p>
     <script>
 
+        const newblockSound = new Audio("../sounds/newblock.mp3");
+        newblockSound.volume = 0.5;
+
         const LOCAL_LAUNCHER_API = "http://127.0.0.1:5000";
         let isEditingMode = false;
         let editingBlock = null;
+        const modalCloseHandlers = new WeakMap();
+        const modalCloseTimers = new WeakMap();
 
         function setLauncherToken() {
             const token = window.prompt("Enter the local launcher API token shown by the server:");
@@ -165,7 +216,12 @@
             throw new Error("The launcher rejected the API token.");
         }
 
-        function createBlockFromForm(event) {
+        function createBlockFromForm(event) {          
+
+            console.log("Creating block from form...");
+            newblockSound.currentTime = 0;
+            newblockSound.play();  
+
             event.preventDefault();
             const executable = document.getElementById("appname").value.trim();
             const block = document.createElement("div");
@@ -201,25 +257,6 @@
             }
 
             const customOnClick = document.getElementById("customonclick").value;
-            if (executable) {
-                block.addEventListener("click", () => {
-                    const status = document.getElementById("launcher-status");
-                    status.textContent = `Launching ${executable}...`;
-                    if (isEditingMode) {
-                        return;
-                    }
-                    launchLocalApp(executable).catch(error => {
-                        status.textContent = error.message;
-                    });
-                });
-            } else if (customOnClick) {
-                block.onclick = () => {
-                    if (!isEditingMode) {
-                        eval(customOnClick);
-                    }
-                };
-            }
-
             const savedOnClick = executable
                 ? `launchLocalApp(${JSON.stringify(executable)}).catch(error => document.getElementById('launcher-status').textContent = error.message);`
                 : customOnClick;
@@ -240,10 +277,29 @@
                     savedBackgroundImage,
                     customStyle
                 ].filter(Boolean).join(" "),
-                custom_onclick: savedOnClick
+                custom_onclick: savedOnClick,
+                custom_css: customStyle,
+                executable: executable,
+                background_image: savedBackgroundImage ? block.style.backgroundImage : ""
             };
             block.blockData = blockData;
+            block.classList.toggle("has-click-action", Boolean(savedOnClick.trim()));
+            block.onclick = () => {
+                if (isEditingMode) {
+                    return;
+                }
+                if (executable) {
+                    const status = document.getElementById("launcher-status");
+                    status.textContent = `Launching ${executable}...`;
+                    launchLocalApp(executable).catch(error => {
+                        status.textContent = error.message;
+                    });
+                } else if (customOnClick) {
+                    eval(customOnClick);
+                }
+            };
             block1.push(blockData);
+            saveBlock1();
 
             document.querySelector(".container").appendChild(block);
             block.addEventListener("mousedown", startDrag);
@@ -254,7 +310,7 @@
                 document.getElementById("launcher-status").textContent =
                     "Uploaded background images are temporary and won't return after reloading the page.";
             }
-            document.getElementById("newblock").style.display = "none";
+            hideModal("newblock");
         }
 
         const GRID_SIZE = 160;
@@ -263,6 +319,14 @@
         let lastParticleTime = 0;
         let placex = 0;
         let placey = 0;
+        const grabSound = new Audio("../sounds/grab.mp3");
+        const releaseSound = new Audio("../sounds/release.mp3");
+        const moveSound = new Audio("../sounds/move.mp3");
+
+        grabSound.volume = 0.5;
+        releaseSound.volume = 0.5;
+        moveSound.volume = 0.5;
+
         const t = new Date()
 
 
@@ -283,7 +347,12 @@
         });
 
         function startDrag(e) {
-            if (!isEditingMode || e.target.closest(".block-settings-trigger")) {
+            if (e.target.closest(".block-settings-trigger")) {
+                return;
+            }
+            grabSound.currentTime = 0;
+            grabSound.play();
+            if (!isEditingMode) {
                 return;
             }
             dragging = this;
@@ -304,6 +373,8 @@
             newtop = snapToGrid(y,"y",heightfactor);
             dragging.style.left = newleft+ 'px';
             dragging.style.top = newtop+ 'px';
+            moveSound.currentTime = 0;
+            moveSound.play();
             const now = performance.now();
             if (now - lastParticleTime >= 28) {
                 const bounds = dragging.getBoundingClientRect();
@@ -328,6 +399,7 @@
         }
 
         function stopDrag() {
+            const wasDragging = dragging !== null;
             if (dragging && dragging.blockData) {
                 dragging.blockData.x = dragging.style.left;
                 dragging.blockData.y = dragging.style.top;
@@ -335,6 +407,10 @@
             dragging = null;
             document.removeEventListener('mousemove', drag);
             document.removeEventListener('mouseup', stopDrag);
+            if (wasDragging) {
+                releaseSound.currentTime = 0;
+                releaseSound.play();
+            }
         }
 
         function snapToGrid(value,type,factor) {
@@ -378,7 +454,132 @@
             }
         
         function show_block_maker() {
-                document.getElementById("newblock").style.display = "initial";
+                showModal("newblock");
+        }
+
+        function downloadLayout() {
+            const layout = {
+                format: "iisu-ahh-launcher-layout",
+                version: 1,
+                blocks: block1
+            };
+            const fileUrl = URL.createObjectURL(
+                new Blob([JSON.stringify(layout, null, 2)], { type: "application/json" })
+            );
+            const link = document.createElement("a");
+            link.href = fileUrl;
+            link.download = `launcher-layout-${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.setTimeout(() => URL.revokeObjectURL(fileUrl), 0);
+            document.getElementById("launcher-status").textContent = "Layout downloaded.";
+        }
+
+        function validateLayout(data) {
+            const blocks = Array.isArray(data) ? data : data?.blocks;
+            if (!Array.isArray(blocks)) {
+                throw new Error("The save file does not contain a block list.");
+            }
+
+            const isPixelValue = value =>
+                typeof value === "string" && /^\d+(?:\.\d+)?px$/.test(value);
+            blocks.forEach((block, index) => {
+                if (!block || typeof block !== "object" || Array.isArray(block)
+                    || !isPixelValue(block.x) || !isPixelValue(block.y)
+                    || !isPixelValue(block.width) || !isPixelValue(block.height)
+                    || typeof block.content !== "string"
+                    || (block.custom_style !== undefined && typeof block.custom_style !== "string")
+                    || (block.custom_onclick !== undefined && typeof block.custom_onclick !== "string")) {
+                    throw new Error(`Block ${index + 1} has invalid or missing layout data.`);
+                }
+            });
+            return blocks;
+        }
+
+        async function loadLayoutFile(event) {
+            const input = event.target;
+            const file = input.files[0];
+            if (!file) {
+                return;
+            }
+
+            try {
+                const loadedBlocks = validateLayout(JSON.parse(await file.text()));
+                if (!window.confirm("Loading this file will replace the current layout. Continue?")) {
+                    document.getElementById("launcher-status").textContent = "Layout load canceled.";
+                    return;
+                }
+
+                block1 = loadedBlocks;
+                create_blocks(block1);
+                const saved = saveBlock1();
+                document.getElementById("launcher-status").textContent = saved
+                    ? "Layout loaded and saved in this browser."
+                    : "Layout loaded for this session, but could not be saved in this browser.";
+                hideModal("save-load");
+            } catch (error) {
+                document.getElementById("launcher-status").textContent =
+                    `Could not load layout: ${error.message}`;
+                console.error("Could not load layout file:", error);
+            } finally {
+                input.value = "";
+            }
+        }
+
+        function showModal(id) {
+            const modal = document.getElementById(id);
+            const closeHandler = modalCloseHandlers.get(modal);
+            if (closeHandler) {
+                modal.removeEventListener("animationend", closeHandler);
+                modalCloseHandlers.delete(modal);
+            }
+            const closeTimer = modalCloseTimers.get(modal);
+            if (closeTimer) {
+                window.clearTimeout(closeTimer);
+                modalCloseTimers.delete(modal);
+            }
+            modal.style.display = "flex";
+            modal.classList.remove("modal-closing");
+            modal.classList.remove("modal-opening");
+            void modal.offsetWidth;
+            modal.classList.add("modal-opening");
+        }
+
+        function hideModal(id) {
+            const modal = document.getElementById(id);
+            if (modal.style.display === "none") {
+                return;
+            }
+
+            modal.classList.remove("modal-opening");
+            modal.classList.add("modal-closing");
+            const finishClosing = () => {
+                if (!modal.classList.contains("modal-closing")) {
+                    return;
+                }
+                modal.style.display = "none";
+                modal.classList.remove("modal-closing");
+                modal.removeEventListener("animationend", onAnimationEnd);
+                modalCloseHandlers.delete(modal);
+                modalCloseTimers.delete(modal);
+            };
+            const onAnimationEnd = event => {
+                if (event.target === modal) {
+                    finishClosing();
+                }
+            };
+            const previousHandler = modalCloseHandlers.get(modal);
+            if (previousHandler) {
+                modal.removeEventListener("animationend", previousHandler);
+            }
+            const previousTimer = modalCloseTimers.get(modal);
+            if (previousTimer) {
+                window.clearTimeout(previousTimer);
+            }
+            modalCloseHandlers.set(modal, onAnimationEnd);
+            modal.addEventListener("animationend", onAnimationEnd);
+            modalCloseTimers.set(modal, window.setTimeout(finishClosing, 250));
         }
 
         function toggleEditMode() {
@@ -416,6 +617,9 @@
             button.addEventListener("mousedown", event => event.stopPropagation());
             button.addEventListener("click", event => {
                 event.stopPropagation();
+                const openSound = document.getElementById("openSound");
+                openSound.currentTime = 0;
+                openSound.play();
                 openBlockSettings(block);
             });
             block.appendChild(button);
@@ -427,7 +631,49 @@
             document.getElementById("edit-text-color").value = colorToHex(block.style.color || "#394255");
             document.getElementById("edit-width").value = parseInt(block.style.width, 10) || 160;
             document.getElementById("edit-height").value = parseInt(block.style.height, 10) || 160;
-            document.getElementById("block-settings").style.display = "flex";
+            const data = block.blockData;
+            const executable = getBlockExecutable(data);
+            document.getElementById("edit-appname").value = executable;
+            document.getElementById("edit-customcss").value = getBlockCustomCss(data);
+            document.getElementById("edit-customonclick").value =
+                executable ? "" : (data.custom_onclick || "");
+            document.getElementById("edit-background-image").value = "";
+            document.getElementById("edit-remove-background-image").checked = false;
+            document.getElementById("edit-more-options").hidden = true;
+            document.getElementById("edit-more-button").textContent = "Show more";
+            document.getElementById("edit-more-button").setAttribute("aria-expanded", "false");
+            showModal("block-settings");
+        }
+
+        function toggleEditMore() {
+            const options = document.getElementById("edit-more-options");
+            const button = document.getElementById("edit-more-button");
+            options.hidden = !options.hidden;
+            button.textContent = options.hidden ? "Show more" : "Show less";
+            button.setAttribute("aria-expanded", String(!options.hidden));
+            document.getElementById("touchSound").play();
+        }
+
+        function getBlockCustomCss(data) {
+            if (typeof data.custom_css === "string") {
+                return data.custom_css;
+            }
+            return (data.custom_style || "")
+                .replace(/(^|;)\s*(?:color|background-image|background-position|background-size|background-repeat)\s*:[^;]*/gi, "")
+                .trim();
+        }
+
+        function getBlockExecutable(data) {
+            if (typeof data.executable === "string") {
+                return data.executable;
+            }
+            const match = (data.custom_onclick || "").match(/launchLocalApp\((["'])(.*?)\1\)/);
+            return match ? match[2].replace(/\\(["'\\])/g, "$1") : "";
+        }
+
+        function getTemporaryBackgroundUrl(backgroundImage) {
+            const match = backgroundImage.match(/url\(\s*["']?(blob:[^"')]+)["']?\s*\)/i);
+            return match ? match[1] : "";
         }
 
         function colorToHex(color) {
@@ -450,17 +696,89 @@
 
             const data = editingBlock.blockData;
             const color = document.getElementById("edit-text-color").value;
+            const customCss = document.getElementById("edit-customcss").value;
+            const customOnClick = document.getElementById("edit-customonclick").value.trim();
+            const executable = document.getElementById("edit-appname").value.trim();
+            const imageFile = document.getElementById("edit-background-image").files[0];
+            const removeBackground = document.getElementById("edit-remove-background-image").checked;
+            let backgroundImage = editingBlock.style.backgroundImage;
+            let backgroundPosition = editingBlock.style.backgroundPosition;
+            let backgroundSize = editingBlock.style.backgroundSize;
+            let backgroundRepeat = editingBlock.style.backgroundRepeat;
+
+            if (removeBackground) {
+                backgroundImage = "";
+                backgroundPosition = "";
+                backgroundSize = "";
+                backgroundRepeat = "";
+            } else if (imageFile) {
+                const oldTemporaryUrl = getTemporaryBackgroundUrl(backgroundImage);
+                if (oldTemporaryUrl) {
+                    URL.revokeObjectURL(oldTemporaryUrl);
+                }
+                backgroundImage = `url("${URL.createObjectURL(imageFile)}")`;
+                backgroundPosition = "center";
+                backgroundSize = "cover";
+                backgroundRepeat = "no-repeat";
+            }
+
             data.content = document.getElementById("edit-content").value;
             editingBlock.innerHTML = data.content;
-            editingBlock.style.color = color;
-            editingBlock.style.width = `${Number(document.getElementById("edit-width").value)}px`;
-            editingBlock.style.height = `${Number(document.getElementById("edit-height").value)}px`;
+            data.x = editingBlock.style.left;
+            data.y = editingBlock.style.top;
+            data.width = `${Number(document.getElementById("edit-width").value)}px`;
+            data.height = `${Number(document.getElementById("edit-height").value)}px`;
+            data.custom_css = customCss;
+            data.executable = executable;
+            data.custom_onclick = executable
+                ? `launchLocalApp(${JSON.stringify(executable)}).catch(error => document.getElementById('launcher-status').textContent = error.message);`
+                : customOnClick;
+            editingBlock.classList.toggle("has-click-action", Boolean(data.custom_onclick.trim()));
+            const isTemporaryBackground = Boolean(getTemporaryBackgroundUrl(backgroundImage));
+            data.background_image = isTemporaryBackground
+                ? ""
+                : backgroundImage;
+            const savedBackgroundStyle = backgroundImage && !isTemporaryBackground
+                ? `background-image: ${backgroundImage}; background-position: ${backgroundPosition || "center"}; background-size: ${backgroundSize || "cover"}; background-repeat: ${backgroundRepeat || "no-repeat"};`
+                : "";
+            data.custom_style = [
+                `color: ${color};`,
+                savedBackgroundStyle,
+                customCss
+            ].filter(Boolean).join(" ");
+
+            editingBlock.style.cssText = [
+                `left: ${data.x};`,
+                `top: ${data.y};`,
+                `width: ${data.width};`,
+                `height: ${data.height};`,
+                `color: ${color};`,
+                backgroundImage ? `background-image: ${backgroundImage};` : "",
+                backgroundImage ? `background-position: ${backgroundPosition || "center"};` : "",
+                backgroundImage ? `background-size: ${backgroundSize || "cover"};` : "",
+                backgroundImage ? `background-repeat: ${backgroundRepeat || "no-repeat"};` : "",
+                customCss
+            ].filter(Boolean).join(" ");
             data.width = editingBlock.style.width;
             data.height = editingBlock.style.height;
-            data.custom_style = `${(data.custom_style || "").replace(/(^|;)\s*color\s*:[^;]*/i, "")} color: ${color};`.trim();
+            editingBlock.onclick = () => {
+                if (isEditingMode) {
+                    return;
+                }
+                if (executable) {
+                    const status = document.getElementById("launcher-status");
+                    status.textContent = `Launching ${executable}...`;
+                    launchLocalApp(executable).catch(error => {
+                        status.textContent = error.message;
+                    });
+                } else if (customOnClick) {
+                    eval(customOnClick);
+                }
+            };
             if (isEditingMode) {
                 addBlockSettingsButton(editingBlock);
             }
+            saveBlock1();
             closeBlockSettings();
         }
 
@@ -471,11 +789,12 @@
             const blockToDelete = editingBlock;
             block1 = block1.filter(block => block !== blockToDelete.blockData);
             blockToDelete.remove();
+            saveBlock1();
             closeBlockSettings();
         }
 
         function closeBlockSettings() {
-            document.getElementById("block-settings").style.display = "none";
+            hideModal("block-settings");
             editingBlock = null;
         }
 

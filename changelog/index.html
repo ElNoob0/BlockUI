@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="../style.css" />
 </head> 
 <body class="changelog-page" style="overflow-y: scroll;">
+    <audio id="clickSound" src="../sounds/touch.mp3"></audio>
     <div class="navbar" style="position: sticky; top: 0px; width: 100%;">
         <img src="../LOGOS/logo simple.png" height="60px">
-        <div onclick="window.location='../index.html'" style="padding-top: 5px;"><img src="../LOGOS/back.png" height="50px"></div>
+        <div onclick="window.location='../index.html';document.getElementById('clickSound').play();" style="padding-top: 5px;"><img src="../LOGOS/back.png" height="50px"></div>
         <p style="position: absolute;padding-top: 22px; right:15px; color: aliceblue;" id="time">Time and date</p>
     </div>
     <div class="bg1"></div>
@@ -65,6 +66,17 @@
              - better edition interface<br>
              - you can now delete blocks<br>
         </p><br><br>
+        <h3>alpha 0.1.1 :</h3>
+        <p>
+            - added sound effects for several things<br>
+            - added transitions for pop up windows<br>
+            - fixed block not saving when created<br>
+            - upgraded the block edit menu<br>
+            - added a "save and load layout" feature<br>
+        </p>
+        <a href="../download/defaultLayout.json" download>
+            <button style="color: #007ca2; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer;" >Download the default layout save file</button>
+        </a><br><br>
     </div>
 
     <script>

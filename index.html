@@ -35,6 +35,14 @@
         let placex = 0;
         let placey = 0;
 
+        const grabSound = new Audio("sounds/grab.mp3");
+        const releaseSound = new Audio("sounds/release.mp3");
+        const moveSound = new Audio("sounds/move.mp3");
+
+        grabSound.volume = 0.5;
+        releaseSound.volume = 0.5;
+        moveSound.volume = 0.5;
+
         document.querySelectorAll('.draggable').forEach(element => {
             // element.style.left = snapToGrid(placex,"x",0) + 'px';
             // element.style.top = snapToGrid(placey,'y',0) + 'px';
@@ -47,6 +55,8 @@
             offsetY = e.clientY - dragging.offsetTop;
             document.addEventListener('mousemove', drag);
             document.addEventListener('mouseup', stopDrag);
+            grabSound.currentTime = 0;
+            grabSound.play();
         }
 
         function drag(e) {
@@ -60,6 +70,8 @@
             newtop = snapToGrid(y,"y",heightfactor);
             dragging.style.left = newleft+ 'px';
             dragging.style.top = newtop+ 'px';
+            moveSound.currentTime = 0;
+            moveSound.play();
             const now = performance.now();
             if (now - lastParticleTime >= 28) {
                 const bounds = dragging.getBoundingClientRect();
@@ -87,6 +99,8 @@
             dragging = null;
             document.removeEventListener('mousemove', drag);
             document.removeEventListener('mouseup', stopDrag);
+            releaseSound.currentTime = 0;
+            releaseSound.play();
         }
 
         function snapToGrid(value,type,factor) {

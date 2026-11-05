@@ -1,4 +1,3 @@
-var executed = false;
 // {x:"px" ,y:"px", width:"px",height:"px",content:"",custom_style:"",custom_onclick:""},
 
 var block1 = [
@@ -15,31 +14,33 @@ var block1 = [
 
 
 function create_blocks(b_list) {
-            if (!executed) {
-            executed = true;
-            console.log("creating blocks")
-            b_list.forEach(block => {
-                let newblock = document.createElement("div");
-                newblock.classList.add("draggable");
-                newblock.style.left = block.x;
-                newblock.style.top = block.y;
-                newblock.style.width = block.width;
-                newblock.style.height = block.height;
-                newblock.innerHTML = block.content;
-                if (block.custom_style) {
-                    newblock.style.cssText += block.custom_style;
-                }
-                newblock.blockData = block;
-                newblock.onclick = function() {
-                    if (!isEditingMode && block.custom_onclick) {
-                        eval(block.custom_onclick);
-                    }
-                };
-                document.querySelector(".container").appendChild(newblock);
-                newblock.addEventListener('mousedown', startDrag);
-            });
+    const container = document.querySelector(".container");
+    container.replaceChildren();
+    b_list.forEach(block => {
+        let newblock = document.createElement("div");
+        newblock.classList.add("draggable");
+        newblock.style.left = block.x;
+        newblock.style.top = block.y;
+        newblock.style.width = block.width;
+        newblock.style.height = block.height;
+        newblock.innerHTML = block.content;
+        if (block.custom_style) {
+            newblock.style.cssText += block.custom_style;
         }
-    }
+        newblock.blockData = block;
+        newblock.classList.toggle("has-click-action", Boolean(block.custom_onclick && block.custom_onclick.trim()));
+        newblock.onclick = function() {
+            if (!isEditingMode && block.custom_onclick) {
+                eval(block.custom_onclick);
+            }
+        };
+        container.appendChild(newblock);
+        newblock.addEventListener('mousedown', startDrag);
+        if (isEditingMode) {
+            addBlockSettingsButton(newblock);
+        }
+    });
+}
 
 
 
@@ -64,6 +65,8 @@ function single_block(block) {
                 newblock.addEventListener('mousedown', startDrag);
                 block1.push(block);
                 newblock.blockData = block;
+                newblock.classList.toggle("has-click-action", Boolean(block.custom_onclick && block.custom_onclick.trim()));
+                saveBlock1();
     }
 
 

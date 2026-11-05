@@ -1,0 +1,66 @@
+{
+  "format": "iisu-ahh-launcher-layout",
+  "version": 1,
+  "blocks": [
+    {
+      "x": "320px",
+      "y": "0px",
+      "width": "480px",
+      "height": "160px",
+      "content": "<p>Welcome to my launcher !</p><p>its still in pre alpha tho</p><p>but its finally functional !</p>",
+      "custom_style": "color: #394255; display: initial;padding-top: 20px;",
+      "custom_css": "display: initial;padding-top: 20px;",
+      "executable": "",
+      "custom_onclick": "",
+      "background_image": ""
+    },
+    {
+      "x": "0px",
+      "y": "480px",
+      "width": "160px",
+      "height": "160px",
+      "content": "",
+      "custom_style": "background-image: url(../images/image3ds.png); background-size:contain;",
+      "custom_onclick": "window.location='../systems/index.html';"
+    },
+    {
+      "x": "320px",
+      "y": "320px",
+      "width": "480px",
+      "height": "320px",
+      "content": "<video controls width=\"460px\" style=\"border-radius: 20px;\"><source src=\"../videos/trailer.mp4\" type=\"video/mp4\"></video>",
+      "custom_style": "",
+      "custom_onclick": ""
+    },
+    {
+      "x": "0px",
+      "y": "640px",
+      "width": "160px",
+      "height": "160px",
+      "content": "Click above to see a game selection exemple page",
+      "custom_style": "text-align: center;",
+      "custom_onclick": ""
+    },
+    {
+      "x": "960px",
+      "y": "160px",
+      "width": "160px",
+      "height": "160px",
+      "content": "<p>Notepad</p>",
+      "custom_style": "text-align: center;color: rgb(83, 0, 63);",
+      "custom_onclick": "launchLocalApp('notepad').catch(error => document.getElementById('launcher-status').textContent = error.message);"
+    },
+    {
+      "x": "800px",
+      "y": "160px",
+      "width": "160px",
+      "height": "160px",
+      "content": "Click on the notepad block to launch the windows notepad ! (requires local server running)",
+      "custom_style": "color: #394255; text-align:center;",
+      "custom_onclick": "",
+      "custom_css": "text-align:center;",
+      "executable": "",
+      "background_image": ""
+    }
+  ]
+}

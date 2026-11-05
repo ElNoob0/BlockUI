@@ -219,6 +219,12 @@ body::after {
     object-fit: contain;
 }
 
+.navbar .nav-control svg {
+    width: 42px;
+    height: 42px;
+    fill: currentColor;
+}
+
 .navbar .nav-control:hover {
     transform: perspective(500px) translateY(-3px) rotateX(5deg) scale(1.05);
     box-shadow: 0 12px 20px rgba(116, 126, 163, .22), inset 0 2px 0 #fff;
@@ -316,7 +322,7 @@ body.main-page .container {
 
 .draggable:hover {
     z-index: 2;
-    transform: perspective(1000px) translateY(-8px) translateZ(24px) rotateX(5deg) rotateY(-2deg) scale(1.055);
+    transform: perspective(1000px) translateY(-4px) translateZ(12px) rotateX(2deg) rotateY(-1deg) scale(1.02);
     box-shadow:
         0 24px 32px rgba(130, 116, 180, .26),
         0 8px 0 rgba(174, 180, 211, .34),
@@ -349,19 +355,25 @@ body.main-page .container {
 
 .main-page.editing-mode .draggable {
     transform-origin: center;
-    animation: edit-mode-sway 2.4s ease-in-out infinite;
+    animation: edit-mode-sway 1.2s ease-in-out infinite;
     cursor: grab;
 }
 
 .main-page.editing-mode .draggable:hover {
     animation-play-state: paused;
+    transform: none;
 }
 
 .main-page:not(.editing-mode) .draggable {
-    cursor: pointer;
+    cursor: default;
 }
 
 .main-page:not(.editing-mode) .draggable:active {
+    cursor: default;
+}
+
+.main-page:not(.editing-mode) .draggable.has-click-action,
+.main-page:not(.editing-mode) .draggable.has-click-action:active {
     cursor: pointer;
 }
 
@@ -659,7 +671,8 @@ input::placeholder {
 }
 
 #newblock,
-#block-settings {
+#block-settings,
+#save-load {
     position: fixed;
     z-index: 5;
     display: flex;
@@ -676,8 +689,57 @@ input::placeholder {
     z-index: 6;
 }
 
+#save-load {
+    z-index: 6;
+}
+
+#newblock.modal-opening,
+#block-settings.modal-opening,
+#save-load.modal-opening {
+    animation: modal-fade-in .22s ease-out both;
+}
+
+#newblock.modal-closing,
+#block-settings.modal-closing,
+#save-load.modal-closing {
+    animation: modal-fade-out .22s ease-in both;
+}
+
+#newblock.modal-opening form,
+#block-settings.modal-opening .block-modal,
+#save-load.modal-opening .block-modal {
+    animation: modal-zoom-in .22s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+#newblock.modal-closing form,
+#block-settings.modal-closing .block-modal,
+#save-load.modal-closing .block-modal {
+    animation: modal-zoom-out .22s ease-in both;
+}
+
+@keyframes modal-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modal-fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes modal-zoom-in {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(.88); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes modal-zoom-out {
+    from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    to { opacity: 0; transform: translate(-50%, -50%) scale(.88); }
+}
+
 #newblock form,
-#block-settings .block-modal {
+#block-settings .block-modal,
+#save-load .block-modal {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -704,6 +766,30 @@ input::placeholder {
     gap: 8px;
 }
 
+#save-load .save-load-modal {
+    gap: 12px;
+}
+
+#save-load .save-load-modal p {
+    margin: 0;
+    color: var(--muted-ink);
+}
+
+#save-load .save-load-modal small {
+    color: var(--muted-ink);
+}
+
+#save-load .save-load-modal > button,
+#save-load .save-load-modal input[type="file"] {
+    min-height: 42px;
+    padding: 9px 12px;
+    border: 1px solid rgba(191, 199, 224, .8);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, .86);
+    color: var(--ink);
+    font: inherit;
+}
+
 #block-settings .block-modal h2 {
     margin-bottom: 4px;
     color: #65638c;
@@ -725,6 +811,49 @@ input::placeholder {
     color: var(--ink);
     font: inherit;
     resize: vertical;
+}
+
+#edit-more-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+    border: 1px solid rgba(191, 199, 224, .65);
+    border-radius: 16px;
+    background: rgba(239, 241, 250, .55);
+}
+
+#edit-more-options[hidden] {
+    display: none;
+}
+
+#edit-more-options input:not([type="checkbox"]),
+#edit-more-options textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid rgba(191, 199, 224, .8);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, .86);
+    color: var(--ink);
+    font: inherit;
+}
+
+#edit-more-options textarea {
+    min-height: 72px;
+}
+
+#edit-more-options input[type="file"] {
+    padding: 8px;
+}
+
+#edit-more-options .remove-background-image {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#edit-more-options small {
+    color: var(--muted-ink);
 }
 
 #block-settings .block-modal input[type="color"] {
